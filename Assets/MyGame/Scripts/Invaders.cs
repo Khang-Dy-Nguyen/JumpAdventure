@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
-using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class Invaders : MonoBehaviour
 {
     public Invader[] prefabs = new Invader[4];
+    public GameObject bossHealthUI;
+    public GameObject bossPrefab;
 
+    private bool bossSpawned = false;
     public Projectile missilePrefab;
     public int rows = 4;
     public int columns = 10;
@@ -25,7 +27,7 @@ public class Invaders : MonoBehaviour
 
     private void MissileAttack()
     {
-       // Bước 1: gom tất cả invader còn sống vào 1 danh sách
+        // Bước 1: gom tất cả invader còn sống vào 1 danh sách
         List<Transform> aliveInvaders = new List<Transform>();
 
         foreach (Transform invader in this.transform)
@@ -101,7 +103,29 @@ public class Invaders : MonoBehaviour
     }
     private void InvaderKilled()
     {
+        // Khi một invader bị tiêu diệt, tăng số lượng đã tiêu diệt
+        this.amountKilled++;
+        if (this.amountKilled >= this.totalInvaders)
+        {
+            // GameManager.Instance.OnLevelComplete();
+            bossSpawned = true;
+            StartCoroutine(SpawnBossDelayed());
+        }
+    }
+    private IEnumerator SpawnBossDelayed()
+    {
+        yield return new WaitForSeconds(3f); // đợi 3 giây
+        SpawnBoss();
+    }
 
+    private void SpawnBoss()
+    {
+        // Vector3 spawnPos = new Vector3(0f, Camera.main.orthographicSize - 1.5f, 0f);
+        Vector3 spawnPos = new Vector3(0f, 8f, 0f);
+        GameObject bossObj = Instantiate(bossPrefab, spawnPos, Quaternion.identity);
+
+        Boss bossScript = bossObj.GetComponent<Boss>();
+        bossScript.InitBossUI(bossHealthUI);
     }
 }
 

@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
+    public static UIManager Instance;
     public GameObject pauseMenu;
     public GameObject heartPanel;
     public GameObject settingsButton;
@@ -12,6 +13,7 @@ public class UIManager : MonoBehaviour
     public GameObject player;
     public GameObject invaders;
     public Invaders invadersScript;
+     public GameObject winMenu;
 
     private bool isPaused = false;
 
@@ -24,6 +26,7 @@ public class UIManager : MonoBehaviour
         settingsButton.SetActive(false);
         heartPanel.SetActive(false);
         gameOverMenu.SetActive(false);
+         winMenu.SetActive(false);
 
         player.SetActive(false);
         invaders.SetActive(false);
@@ -38,6 +41,32 @@ public class UIManager : MonoBehaviour
         }
     }
 
+     void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject); // Tránh trùng lặp
+        }
+    }
+     public void ShowWinMenu()
+    {
+        Time.timeScale = 0f;
+        heartPanel.SetActive(false);
+        settingsButton.SetActive(false);
+        pauseMenu.SetActive(false);
+        gameOverMenu.SetActive(false);
+        winMenu.SetActive(true);
+
+        // Dừng âm thanh nền
+        // if (AudioManager.Instance != null)
+        // {
+        //     AudioManager.Instance.StopMusic("BackgoundAudio");
+        // }
+    }
     public void TogglePause()
     {
         isPaused = !isPaused;
@@ -74,6 +103,8 @@ public class UIManager : MonoBehaviour
         heartPanel.SetActive(true);
         settingsButton.SetActive(true);
         Time.timeScale = 1f;
+        
+        winMenu.SetActive(false);
 
         // bắt đầu animation bay lên
         player.SetActive(true); // bật máy bay
